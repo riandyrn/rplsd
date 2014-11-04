@@ -36,8 +36,16 @@ class Calculator extends CI_Controller
 				
 			$fare_data = $_POST;
 			$fare_data['fare'] = $this->main->calculateFare($_POST);
+			//$this->debug($this->main->getBiaya('GOL1', 'JM4', 13, 1));
 			$data['fare_data'] = $fare_data;
 			$this->calculate($data);
 		}		
+	}
+	
+	private function debug($var)
+	{
+		echo '<pre>';
+		var_dump($var);
+		echo '</pre>';
 	}
 }

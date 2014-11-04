@@ -20,9 +20,45 @@ class Main_model extends CI_Model
 			- gol_kendaraan
 		*/
 		
-		$data_rute = $this->getRute($data['gate_berangkat'], $data['gate_tujuan']);
-		//$this->debug($data_rute);
-		return $this->hitungBiayaTotalRute($data_rute, $data['gol_kendaraan']);
+		$ruas_start = $this->getRuasTol($data['gate_berangkat']);
+		$ruas_end = $this->getRuasTol($data['gate_tujuan']);
+		
+		$gol_kendaraan = $data['gol_kendaraan'];
+		$gt_start = $data['gate_berangkat'];
+		$gt_end = $data['gate_tujuan'];
+		
+		$total_biaya = 0;
+		
+		if(!($gt_start == $gt_end))
+		{
+			if($ruas_start == $ruas_end)
+			{
+				/*
+					kalau masih ada dalam satu ruas,
+					biaya dihitung secara normal
+				*/
+				
+				
+				$gt_start_id = $this->getIdGate($gt_start, $ruas_start);
+				$gt_end_id = $this->getIdGate($gt_end, $ruas_start);
+				
+				$total_biaya = $this->getBiaya($gol_kendaraan, $ruas_start, $gt_start_id, $gt_end_id);
+			}
+			else
+			{
+				/*
+					ini kalau ternyata kalau beda ruas,
+					maka ruas di track pake BFS setelah
+					itu dihitung biayanya berapa
+				*/
+				
+				$data_rute = $this->getRute($gt_start, $gt_end, $gol_kendaraan);
+				//$this->debug($data_rute);
+				$total_biaya = $this->hitungBiayaTotalRute($data_rute, $gol_kendaraan);
+			}
+		}
+		
+		return $total_biaya;
 	}
 	
 	private function hitungBiayaTotalRute($data_rute, $gol_kendaraan)
@@ -36,7 +72,7 @@ class Main_model extends CI_Model
 		return $sum;
 	}
 	
-	private function getBiaya($gol_kendaraan, $ruas, $gt_start, $gt_end)
+	public function getBiaya($gol_kendaraan, $ruas, $gt_start, $gt_end)
 	{
 		/*
 			fungsi ini return biaya perjalanan
@@ -56,6 +92,8 @@ class Main_model extends CI_Model
 			$this->db->like('TO_FROM', $gt_start);
 			$query = $this->db->get('fares');			
 		}
+		
+		//$this->debug($query->result());
 		
 		$row = $query->first_row();
 		
@@ -83,7 +121,7 @@ class Main_model extends CI_Model
 		return $ret;
 	}	
 	
-	private function getRute($gt_start_name, $gt_end_name)
+	private function getRute($gt_start_name, $gt_end_name, $gol_kendaraan)
 	{
 		/*
 			fungsi ini return array yg isi
@@ -132,22 +170,21 @@ class Main_model extends CI_Model
 				}
 			}
 			
-			//$this->debug($Q);
 		}
 		
-		//$this->debug($pred);
 		$rute = $this->reconstructRute($r_start, $r_end, $pred);
 		
-		//return $rute;
-		return $this->prepareRuteData($rute, $gt_start, $gt_end);
+		return $this->prepareRuteData($rute, $gt_start, $gt_end, $gol_kendaraan);
 	}
 	
 	private function getRuasTol($gate_name)
 	{
 		$this->db->where('GERBANG_TOL_NAME', $gate_name);
 		$query = $this->db->get('routes');
-				
-		return $query->last_row()->RUAS_TOL_ID;
+		
+		//$this->debug($query->result());
+		
+		return $query->first_row()->RUAS_TOL_ID;
 	}
 	
 	private function getIdGate($gate_name, $ruas)
@@ -159,7 +196,7 @@ class Main_model extends CI_Model
 		return $query->first_row()->GT_SEQUENCE;
 	}	
 	
-	private function prepareRuteData($rute, $gt_start, $gt_end)
+	private function prepareRuteData($rute, $gt_start, $gt_end, $gol_kendaraan)
 	{
 		/*
 			rute itu isinya ruas yang udah
@@ -196,6 +233,8 @@ class Main_model extends CI_Model
 				}
 			}
 			
+			$objek->biaya = $this->getBiaya($gol_kendaraan, $objek->ruas, $objek->start, $objek->end);
+			
 			array_push($ret, $objek);
 		}
 		
@@ -224,6 +263,10 @@ class Main_model extends CI_Model
 			path-nya. Jd kita nggak perlu
 			ngebatesin.
 		*/
+		
+		/*$this->debug($r_start);
+		$this->debug($r_end);
+		$this->debug($table);*/
 		
 		$ret = array();
 		$found = false;
