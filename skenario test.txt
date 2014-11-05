@@ -1,0 +1,22 @@
+KANCI - KALIHURIP
+
+Enhancement:
+- Dibedakan kasusnya utk yang masih ada dalam satu ruas
+- Biaya jd lgsng dihitung saat ada di rute
+
+Skenario Test:
+- dalam satu ruas:
+Kapuk-Cengkareng: 5500
+JM4_13(Dawuan Interchange) - JM4_1(Cawang)
+
+Cileunyi-Sadang (JM6_11 - JM6_2)
+- antar ruas langsung terhubung
+JM2_4(Cengkareng) - JM1_9(Tomang): 
+JM6_10(Buah Batu) - JM4_3(Cikunir):
+JM4_3(Cikunir) - JM1_2(Tebet):
+
+- antar ruas nggak langsung terhubung
+Tebet-Pasteur
+
+additional test:
+- test di intersection
