@@ -2,10 +2,17 @@
 
 class Main_model extends CI_Model
 {
-	public function getGateNames()
+	public function getAllRuas()
+	{
+		$query = $this->db->get('list');
+		return $query->result();
+	}
+	
+	public function getGateNames($ruas)
 	{
 		$this->db->distinct();
 		$this->db->select('GERBANG_TOL_NAME');
+		$this->db->where('RUAS_TOL_ID', $ruas);
 		$query = $this->db->get('routes');
 		
 		return $query->result();
@@ -15,13 +22,15 @@ class Main_model extends CI_Model
 	{
 		/*
 			data berisi keys berikut:
+			- ruas_berangkat
+			- ruas_tujuan
 			- gate_berangkat
 			- gate_tujuan
 			- gol_kendaraan
 		*/
 		
-		$ruas_start = $this->getRuasTol($data['gate_berangkat']);
-		$ruas_end = $this->getRuasTol($data['gate_tujuan']);
+		$ruas_start = $data['ruas_berangkat'];
+		$ruas_end = $data['ruas_tujuan'];
 		
 		$gol_kendaraan = $data['gol_kendaraan'];
 		$gt_start = $data['gate_berangkat'];
@@ -52,13 +61,47 @@ class Main_model extends CI_Model
 					itu dihitung biayanya berapa
 				*/
 				
-				$data_rute = $this->getRute($gt_start, $gt_end, $gol_kendaraan);
-				//$this->debug($data_rute);
+				$data_rute = $this->getRute($data);
 				$total_biaya = $this->hitungBiayaTotalRute($data_rute, $gol_kendaraan);
 			}
 		}
 		
 		return $total_biaya;
+	}
+	
+	private function getRute($data)
+	{	
+		/*
+			data berisi keys berikut:
+			- ruas_berangkat
+			- ruas_tujuan
+			- gate_berangkat
+			- gate_tujuan
+			- gol_kendaraan
+
+			fungsi ini return array yg isi
+			tiap elemennya mengandung keys
+			sbg berikut:
+			- ruas
+			- start
+			- end
+			- biaya
+			
+			path-nya udah di define tinggal
+			fetch aja dari db
+		*/
+		
+		$gt_start = $this->getIdGate($data['gate_berangkat'], $data['ruas_berangkat']);
+		$gt_end = $this->getIdGate($data['gate_tujuan'], $data['ruas_tujuan']);
+		$gol_kendaraan = $data['gol_kendaraan'];
+		
+		$this->db->where('START_RUAS', $data['ruas_berangkat']);
+		$this->db->where('END_RUAS', $data['ruas_tujuan']);
+		$query = $this->db->get('path');
+		
+		$rute = explode(",", $query->first_row()->PATH);
+		
+		return $this->prepareRuteData($rute, $gt_start, $gt_end, $gol_kendaraan);
 	}
 	
 	private function hitungBiayaTotalRute($data_rute, $gol_kendaraan)
@@ -93,89 +136,34 @@ class Main_model extends CI_Model
 			$query = $this->db->get('fares');			
 		}
 		
-		//$this->debug($query->result());
-		
 		$row = $query->first_row();
 		
-		$ret;
+		$ret = 0;
 		
-		switch($gol_kendaraan)
+		if($row)
 		{
-			case 'GOL1':
-				$ret = $row->GOL1;
-				break;
-			case 'GOL2':
-				$ret = $row->GOL2;
-				break;
-			case 'GOL3':
-				$ret = $row->GOL3;
-				break;
-			case 'GOL4':
-				$ret = $row->GOL4;
-				break;
-			case 'GOL5':
-				$ret = $row->GOL5;
-				break;				
+			switch($gol_kendaraan)
+			{
+				case 'GOL1':
+					$ret = $row->GOL1;
+					break;
+				case 'GOL2':
+					$ret = $row->GOL2;
+					break;
+				case 'GOL3':
+					$ret = $row->GOL3;
+					break;
+				case 'GOL4':
+					$ret = $row->GOL4;
+					break;
+				case 'GOL5':
+					$ret = $row->GOL5;
+					break;				
+			}
 		}
-		
+
 		return $ret;
 	}	
-	
-	private function getRute($gt_start_name, $gt_end_name, $gol_kendaraan)
-	{
-		/*
-			fungsi ini return array yg isi
-			tiap elemennya mengandung keys
-			sbg berikut:
-			- ruas
-			- start
-			- end
-			
-			untuk sekarang kita pake algoritma BFS dl
-			
-			*$gt_start dan $gt_end adalah id/sequence 
-			dr gate-nya
-			
-			**ini msh sgt tidak efektif, cb nanti 
-			perbaiki
-		*/
-		
-		$r_start = $this->getRuasTol($gt_start_name);
-		$r_end = $this->getRuasTol($gt_end_name);
-		
-		$gt_start = $this->getIdGate($gt_start_name, $r_start);
-		$gt_end = $this->getIdGate($gt_end_name, $r_end);
-		
-		$s = $r_start;
-		
-		$Q = array();
-		$flag = array();
-		$pred = array();
-		$this->enqueue($Q, $s);
-		
-		$v;
-		
-		while(count($Q) > 0)
-		{
-			$v = $this->dequeue($Q);
-			
-			$tetangga = $this->getTetangga($v);
-			foreach($tetangga as $w)
-			{
-				if(!in_array($w, $flag))
-				{
-					array_push($flag, $w);
-					$pred[$w] = $v;
-					$this->enqueue($Q, $w);
-				}
-			}
-			
-		}
-		
-		$rute = $this->reconstructRute($r_start, $r_end, $pred);
-		
-		return $this->prepareRuteData($rute, $gt_start, $gt_end, $gol_kendaraan);
-	}
 	
 	private function getRuasTol($gate_name)
 	{
@@ -327,5 +315,66 @@ class Main_model extends CI_Model
 		var_dump($data);
 		echo '</pre>';
 	}
+	
+	/*private function getRute($gt_start_name, $gt_end_name, $gol_kendaraan)
+	{
+		/*
+			Ini fungsinya deprecated, jadinya path-nya
+			udah di define, nggak pake BFS.
+			
+			-saran mbah emon (y)
+			
+			fungsi ini return array yg isi
+			tiap elemennya mengandung keys
+			sbg berikut:
+			- ruas
+			- start
+			- end
+			
+			untuk sekarang kita pake algoritma BFS dl
+			
+			*$gt_start dan $gt_end adalah id/sequence 
+			dr gate-nya
+			
+			**ini msh sgt tidak efektif, cb nanti 
+			perbaiki
+		
+		
+		$r_start = $this->getRuasTol($gt_start_name);
+		$r_end = $this->getRuasTol($gt_end_name);
+		
+		$gt_start = $this->getIdGate($gt_start_name, $r_start);
+		$gt_end = $this->getIdGate($gt_end_name, $r_end);
+		
+		$s = $r_start;
+		
+		$Q = array();
+		$flag = array();
+		$pred = array();
+		$this->enqueue($Q, $s);
+		
+		$v;
+		
+		while(count($Q) > 0)
+		{
+			$v = $this->dequeue($Q);
+			
+			$tetangga = $this->getTetangga($v);
+			foreach($tetangga as $w)
+			{
+				if(!in_array($w, $flag))
+				{
+					array_push($flag, $w);
+					$pred[$w] = $v;
+					$this->enqueue($Q, $w);
+				}
+			}
+			
+		}
+		
+		$rute = $this->reconstructRute($r_start, $r_end, $pred);
+		
+		return $this->prepareRuteData($rute, $gt_start, $gt_end, $gol_kendaraan);
+	}*/	
 
 }

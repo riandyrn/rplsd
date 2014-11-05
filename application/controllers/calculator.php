@@ -10,18 +10,41 @@ class Calculator extends CI_Controller
 	
 	public function index()
 	{	
+		$this->setRuas();
+	}
+	
+	public function setRuas()
+	{
+		$data['assets'] = base_url() . 'assets/';
+		$data['base_path'] = base_url() . 'index.php/calculator/';	
+		$data['ruas'] = $this->main->getAllRuas();
+		$this->load->view('ruas', $data);
+	}
+	
+	public function setRuas_P()
+	{
+		$this->session->set_userdata('ruas_berangkat', $_POST['ruas_berangkat']);
+		$this->session->set_userdata('ruas_tujuan', $_POST['ruas_tujuan']);
 		$this->calculate();
 	}
 	
 	public function calculate($data = array())
 	{
 		/*
-			ini tampilan default
+			ini tampilan input gate
 		*/
+		
+		$ruas_berangkat = $this->session->userdata('ruas_berangkat');
+		$ruas_tujuan = $this->session->userdata('ruas_tujuan');
 		
 		$data['assets'] = base_url() . 'assets/';
 		$data['base_path'] = base_url() . 'index.php/calculator/';
-		$data['gates'] = $this->main->getGateNames();
+		$data['gate_berangkat'] = $this->main->getGateNames($ruas_berangkat);
+		$data['gate_tujuan'] = $this->main->getGateNames($ruas_tujuan);
+		
+		$data['ruas_berangkat'] = $ruas_berangkat;
+		$data['ruas_tujuan'] = $ruas_tujuan;
+		
 		$this->load->view('calculator', $data);	
 	}
 	
@@ -36,7 +59,6 @@ class Calculator extends CI_Controller
 				
 			$fare_data = $_POST;
 			$fare_data['fare'] = $this->main->calculateFare($_POST);
-			//$this->debug($this->main->getBiaya('GOL1', 'JM4', 13, 1));
 			$data['fare_data'] = $fare_data;
 			$this->calculate($data);
 		}		

@@ -57,11 +57,21 @@
 				<form action="<?=$base_path;?>calculate_P" method="POST">
 					<div class="form-group">
 						<label for="gate_berangkat">Gate Berangkat:</label>
-						<input id="gate_berangkat" name="gate_berangkat" type="text" class="form-control" placeholder="Ketik nama gate berangkat disini..." autocomplete="off">
+						<!--<input id="gate_berangkat" name="gate_berangkat" type="text" class="form-control" placeholder="Ketik nama gate berangkat disini..." autocomplete="off">-->
+						<select name="gate_berangkat" id="" class="form-control">
+							<?php foreach($gate_berangkat as $row) { ?>
+								<option value="<?=$row->GERBANG_TOL_NAME;?>"><?=$row->GERBANG_TOL_NAME;?></option>
+							<?php } ?>
+						</select>
 					</div>
 					<div class="form-group">
 						<label for="gate_tujuan">Gate Tujuan:</label>
-						<input id="gate_tujuan" name="gate_tujuan" type="text" class="form-control" placeholder="Ketik nama gate tujuan disini..." autocomplete="off">
+						<!--<input id="gate_tujuan" name="gate_tujuan" type="text" class="form-control" placeholder="Ketik nama gate tujuan disini..." autocomplete="off">-->
+						<select name="gate_tujuan" id="" class="form-control">
+							<?php foreach($gate_tujuan as $row) { ?>
+								<option value="<?=$row->GERBANG_TOL_NAME;?>"><?=$row->GERBANG_TOL_NAME;?></option>
+							<?php } ?>
+						</select>						
 					</div>
 					<div class="form-group">
 						<label for="">Gol. Kendaraan</label>
@@ -74,7 +84,11 @@
 						</select>
 					</div>
 					
+					<input type="hidden" name="ruas_berangkat" value="<?=$ruas_berangkat;?>">
+					<input type="hidden" name="ruas_tujuan" value="<?=$ruas_tujuan;?>">
+					
 					<input type="submit" class="btn btn-lg btn-primary btn-block" value="Hitung Biaya!">
+					<p style="margin-top: 8px;" class="text-center"><a href="<?=$base_path;?>setRuas">&laquo;Kembali ke set ruas</a></p>				
 				</form>
 			</div>
 		</div>
@@ -111,15 +125,22 @@
 	
 	<script>
 	
-		var gates =
+		var gate_berangkat =
 		[
-			<?php foreach($gates as $gate) { ?>
+			<?php foreach($gate_berangkat as $gate) { ?>
 				'<?=$gate->GERBANG_TOL_NAME;?>',
 			<?php } ?>
 		]
 		
-		$('#gate_berangkat').typeahead({source:gates});
-		$('#gate_tujuan').typeahead({source:gates});
+		var gate_tujuan =
+		[
+			<?php foreach($gate_tujuan as $gate) { ?>
+				'<?=$gate->GERBANG_TOL_NAME;?>',
+			<?php } ?>
+		]		
+		
+		$('#gate_berangkat').typeahead({source:gate_berangkat});
+		$('#gate_tujuan').typeahead({source:gate_tujuan});
 	</script>
 	
 	<?php if(isset($fare_data)) { ?>
