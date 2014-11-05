@@ -124,8 +124,8 @@ class Main_model extends CI_Model
 		*/
 		
 		$this->db->where('RUAS_TOL_ID', $ruas);
-		$this->db->like('FROM_TO', $gt_start);
-		$this->db->like('TO_FROM', $gt_end);
+		$this->db->where('FROM_TO', $gt_start);
+		$this->db->where('TO_FROM', $gt_end);
 		$query = $this->db->get('fares');
 		
 		if($query->num_rows() == 0)
