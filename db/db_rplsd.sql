@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 05 Nov 2014 pada 13.02
+-- Generation Time: 06 Nov 2014 pada 10.48
 -- Versi Server: 5.6.16
 -- PHP Version: 5.5.9
 
@@ -687,8 +687,8 @@ INSERT INTO `routes` (`RUAS_TOL_ID`, `GT_SEQUENCE`, `GERBANG_TOL_NAME`, `KM`, `N
 ('JM5', 6, 'GT-KARAWACI BARAT', '20.1', 'Lippo Village, Legok, Binong', '', '-6.226824715', '106.6141605'),
 ('JM5', 7, 'GT-KARAWACI TIMUR', '21.0', 'Lippo Village, Legok, Binong', '', '-6.223411732', '106.6216922'),
 ('JM5', 8, 'GT-TANGERANG BARAT', '26.0', 'Bitung, Curung', '', '-6.222461506', '106.6356496'),
-('JM6', 1, 'GT-DAWUAN INTERCHANGE', '0.0', 'Purwakarta, Sadang, Subang', '', '-6.426958437', '107.4415388'),
-('JM6', 2, 'GT-SADANG', '1.0', 'Purwakarta, Sadang, Subang', 'JM4', '-6.506341101', '107.4495736'),
+('JM6', 1, 'GT-DAWUAN INTERCHANGE', '0.0', 'Purwakarta, Sadang, Subang', 'JM4', '-6.426958437', '107.4415388'),
+('JM6', 2, 'GT-SADANG', '1.0', 'Purwakarta, Sadang, Subang', '', '-6.506341101', '107.4495736'),
 ('JM6', 3, 'GT-JATILUHUR', '8.0', 'Purwakarta, Jatiluhur, Ciganea', '', '-6.566139896', '107.431188'),
 ('JM6', 4, 'GT-PADALARANG', '47.0', 'Padalarang, Kota Baru Parahyangan, Cikalongwetan, Cianjur, Sukabumi', '', '-6.856656270', '107.4946391'),
 ('JM6', 5, 'GT-BAROS', '51.0', 'Baros, Cimahi, Leuwigajah', '', '-6.897120990', '107.5420654'),
