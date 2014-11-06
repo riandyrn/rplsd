@@ -18,7 +18,7 @@ class Main_model extends CI_Model
 		return $query->result();
 	}
 	
-	public function calculateFare($data)
+	public function getDataPerjalanan($data)
 	{
 		/*
 			data berisi keys berikut:
@@ -37,6 +37,7 @@ class Main_model extends CI_Model
 		$gt_end = $data['gate_tujuan'];
 		
 		$total_biaya = 0;
+		$data_rute = array();
 		
 		if(!($gt_start == $gt_end))
 		{
@@ -51,7 +52,19 @@ class Main_model extends CI_Model
 				$gt_start_id = $this->getIdGate($gt_start, $ruas_start);
 				$gt_end_id = $this->getIdGate($gt_end, $ruas_start);
 				
-				$total_biaya = $this->getBiaya($gol_kendaraan, $ruas_start, $gt_start_id, $gt_end_id);
+				$data_rute = array();
+				
+				$objek = new stdClass();
+				$objek->ruas = $ruas_start;
+				$objek->start = $gt_start_id;
+				$objek->end = $gt_end_id;
+				$objek->start_name = $gt_start;
+				$objek->end_name = $gt_end;
+				$objek->biaya = $this->getBiaya($gol_kendaraan, $ruas_start, $gt_start_id, $gt_end_id);
+				
+				array_push($data_rute, $objek);
+				
+				$total_biaya = $objek->biaya;
 			}
 			else
 			{
@@ -66,7 +79,13 @@ class Main_model extends CI_Model
 			}
 		}
 		
-		return $total_biaya;
+		$ret = array
+		(
+			'total_biaya' => $total_biaya,
+			'data_rute' => $data_rute
+		);
+		
+		return $ret;
 	}
 	
 	private function getRute($data)
@@ -123,42 +142,45 @@ class Main_model extends CI_Model
 			$ruas
 		*/
 		
-		$this->db->where('RUAS_TOL_ID', $ruas);
-		$this->db->where('FROM_TO', $gt_start);
-		$this->db->where('TO_FROM', $gt_end);
-		$query = $this->db->get('fares');
-		
-		if($query->num_rows() == 0)
-		{
-			$this->db->where('RUAS_TOL_ID', $ruas);
-			$this->db->like('FROM_TO', $gt_end);
-			$this->db->like('TO_FROM', $gt_start);
-			$query = $this->db->get('fares');			
-		}
-		
-		$row = $query->first_row();
-		
 		$ret = 0;
 		
-		if($row)
+		if($gt_start != $gt_end)
 		{
-			switch($gol_kendaraan)
+			$this->db->where('RUAS_TOL_ID', $ruas);
+			$this->db->where('FROM_TO', $gt_start);
+			$this->db->where('TO_FROM', $gt_end);
+			$query = $this->db->get('fares');
+			
+			if($query->num_rows() == 0)
 			{
-				case 'GOL1':
-					$ret = $row->GOL1;
-					break;
-				case 'GOL2':
-					$ret = $row->GOL2;
-					break;
-				case 'GOL3':
-					$ret = $row->GOL3;
-					break;
-				case 'GOL4':
-					$ret = $row->GOL4;
-					break;
-				case 'GOL5':
-					$ret = $row->GOL5;
-					break;				
+				$this->db->where('RUAS_TOL_ID', $ruas);
+				$this->db->like('FROM_TO', $gt_end);
+				$this->db->like('TO_FROM', $gt_start);
+				$query = $this->db->get('fares');			
+			}
+			
+			$row = $query->first_row();
+			
+			if($row)
+			{
+				switch($gol_kendaraan)
+				{
+					case 'GOL1':
+						$ret = $row->GOL1;
+						break;
+					case 'GOL2':
+						$ret = $row->GOL2;
+						break;
+					case 'GOL3':
+						$ret = $row->GOL3;
+						break;
+					case 'GOL4':
+						$ret = $row->GOL4;
+						break;
+					case 'GOL5':
+						$ret = $row->GOL5;
+						break;				
+				}
 			}
 		}
 
@@ -221,12 +243,28 @@ class Main_model extends CI_Model
 				}
 			}
 			
+			$objek->start_name = $this->getGateName($objek->ruas, $objek->start);
+			$objek->end_name = $this->getGateName($objek->ruas, $objek->end);
 			$objek->biaya = $this->getBiaya($gol_kendaraan, $objek->ruas, $objek->start, $objek->end);
 			
-			array_push($ret, $objek);
+			if($objek->start != $objek->end)
+			{
+				array_push($ret, $objek);
+			}
 		}
 		
+		//$this->debug($ret);
+		
 		return $ret;
+	}
+	
+	private function getGateName($ruas, $id)
+	{
+		$this->db->where('RUAS_TOL_ID', $ruas);
+		$this->db->where('GT_SEQUENCE', $id);
+		$query = $this->db->get('routes');
+		
+		return $query->first_row()->GERBANG_TOL_NAME;
 	}
 	
 	private function getIntersectionGate($ruas, $connected)

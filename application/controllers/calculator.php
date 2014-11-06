@@ -58,8 +58,11 @@ class Calculator extends CI_Controller
 			*/
 				
 			$fare_data = $_POST;
-			$fare_data['fare'] = $this->main->calculateFare($_POST);
+			$tmp = $this->main->getDataPerjalanan($_POST);
+			$fare_data['fare'] = $tmp['total_biaya'];
+			$fare_data['data_rute'] = $tmp['data_rute'];
 			$data['fare_data'] = $fare_data;
+			
 			$this->calculate($data);
 		}		
 	}

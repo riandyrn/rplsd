@@ -50,7 +50,11 @@
     </nav>
 
     <div class="container">
-
+		
+		<?php
+			$ruas_berangkat = $this->session->userdata('ruas_berangkat');
+			$ruas_tujuan = $this->session->userdata('ruas_tujuan');
+		?>
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4">
 				<h1 class="text-center">Toll Fare Calculator</h1>
@@ -59,7 +63,14 @@
 						<label for="gate_berangkat">Ruas Berangkat:</label>
 						<select name="ruas_berangkat" id="" class="form-control">
 							<?php foreach($ruas as $row) { ?>
-								<option value="<?=$row->RUAS_TOL_ID;?>"><?=$row->RUAS_TOL;?></option>
+								<option 
+									value="<?=$row->RUAS_TOL_ID;?>"
+									<?php if($ruas_berangkat == $row->RUAS_TOL_ID) { ?>
+										selected
+									<?php } ?>
+								>
+									<?=$row->RUAS_TOL;?>
+								</option>
 							<?php } ?>
 						</select>
 					</div>
@@ -67,7 +78,14 @@
 						<label for="gate_tujuan">Ruas Tujuan:</label>
 						<select name="ruas_tujuan" id="" class="form-control">
 							<?php foreach($ruas as $row) { ?>
-								<option value="<?=$row->RUAS_TOL_ID;?>"><?=$row->RUAS_TOL;?></option>
+								<option 
+									value="<?=$row->RUAS_TOL_ID;?>"
+									<?php if($ruas_tujuan == $row->RUAS_TOL_ID) { ?>
+										selected
+									<?php } ?>									
+								>
+									<?=$row->RUAS_TOL;?>
+								</option>
 							<?php } ?>
 						</select>
 					</div>

@@ -60,7 +60,16 @@
 						<!--<input id="gate_berangkat" name="gate_berangkat" type="text" class="form-control" placeholder="Ketik nama gate berangkat disini..." autocomplete="off">-->
 						<select name="gate_berangkat" id="" class="form-control">
 							<?php foreach($gate_berangkat as $row) { ?>
-								<option value="<?=$row->GERBANG_TOL_NAME;?>"><?=$row->GERBANG_TOL_NAME;?></option>
+								<option 
+									value="<?=$row->GERBANG_TOL_NAME;?>"
+									<?php if(isset($fare_data)) {?>
+										<?php if($fare_data['gate_berangkat'] == $row->GERBANG_TOL_NAME) { ?>
+											selected
+										<?php } ?>
+									<?php } ?>
+								>
+									<?=$row->GERBANG_TOL_NAME;?>
+								</option>
 							<?php } ?>
 						</select>
 					</div>
@@ -69,18 +78,44 @@
 						<!--<input id="gate_tujuan" name="gate_tujuan" type="text" class="form-control" placeholder="Ketik nama gate tujuan disini..." autocomplete="off">-->
 						<select name="gate_tujuan" id="" class="form-control">
 							<?php foreach($gate_tujuan as $row) { ?>
-								<option value="<?=$row->GERBANG_TOL_NAME;?>"><?=$row->GERBANG_TOL_NAME;?></option>
+								<option 
+									value="<?=$row->GERBANG_TOL_NAME;?>"
+									<?php if(isset($fare_data)) {?>
+										<?php if($fare_data['gate_tujuan'] == $row->GERBANG_TOL_NAME) { ?>
+											selected
+										<?php } ?>
+									<?php } ?>
+								>
+									<?=$row->GERBANG_TOL_NAME;?>
+								</option>
 							<?php } ?>
 						</select>						
 					</div>
 					<div class="form-group">
 						<label for="">Gol. Kendaraan</label>
 						<select name="gol_kendaraan" id="" class="form-control">
-							<option value="GOL1">Golongan 1</option>
-							<option value="GOL2">Golongan 2</option>
-							<option value="GOL3">Golongan 3</option>
-							<option value="GOL4">Golongan 4</option>
-							<option value="GOL5">Golongan 5</option>
+							<?php 
+								$arr_gol = array
+								(
+									array('GOL1', 'Golongan 1'),
+									array('GOL2', 'Golongan 2'),
+									array('GOL3', 'Golongan 3'),
+									array('GOL4', 'Golongan 4'),
+									array('GOL5', 'Golongan 5'),
+								);
+							?>
+							<?php foreach($arr_gol as $row) { ?>
+								<option 
+									value="<?=$row[0];?>"
+									<?php if(isset($fare_data)) { ?>
+										<?php if($fare_data['gol_kendaraan'] == $row[0]) { ?>
+											selected
+										<?php } ?>
+									<?php } ?>
+								>
+									<?=$row[1];?>
+								</option>
+							<?php } ?>
 						</select>
 					</div>
 					
@@ -103,7 +138,25 @@
 					<h4 class="modal-title" id="myModalLabel">Biaya Perjalanan</h4>
 				  </div>
 				  <div class="modal-body">
-					Biaya perjalanan <?=$fare_data['gol_kendaraan']?> dari <?=$fare_data['gate_berangkat']?> ke <?=$fare_data['gate_tujuan']?>: <?=$fare_data['fare']?>
+					<p>
+						Biaya perjalanan <?=$fare_data['gol_kendaraan']?> dari <?=$fare_data['gate_berangkat']?> ke <?=$fare_data['gate_tujuan']?>: <b><?=$fare_data['fare']?></b>
+					</p>
+					<p>
+						<b>Gate ditempuh:</b><br>
+						
+						<?php $data_rute = $fare_data['data_rute'] ?> 
+						<?php if($data_rute) { ?>
+							<ul>
+								<?php foreach($data_rute as $row) { ?>
+									<li><?=$row->start_name;?> -> <?=$row->end_name;?> : <?=$row->biaya;?></li>
+								<?php } ?>
+							</ul>
+						<?php } else { ?>
+							<p>
+								Tidak ada
+							</p>
+						<?php } ?>
+					</p>
 				  </div>
 				  <div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
