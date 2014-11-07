@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.1.6
+-- version 4.0.4.1
 -- http://www.phpmyadmin.net
 --
--- Host: 127.0.0.1
--- Generation Time: 06 Nov 2014 pada 10.48
--- Versi Server: 5.6.16
--- PHP Version: 5.5.9
+-- Inang: 127.0.0.1
+-- Waktu pembuatan: 07 Nov 2014 pada 10.19
+-- Versi Server: 5.6.11
+-- Versi PHP: 5.5.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,8 +17,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `db_rplsd`
+-- Basis data: `db_rplsd`
 --
+CREATE DATABASE IF NOT EXISTS `db_rplsd` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `db_rplsd`;
 
 -- --------------------------------------------------------
 
@@ -496,7 +498,11 @@ INSERT INTO `fares` (`RUAS_TOL_ID`, `FROM_TO`, `TO_FROM`, `GOL1`, `GOL2`, `GOL3`
 ('JM7', 1, 4, 10000, 13000, 18500, 23000, 27500),
 ('JM7', 2, 3, 3000, 4000, 5000, 6500, 7500),
 ('JM7', 2, 4, 8000, 10000, 14500, 18000, 21500),
-('JM7', 3, 4, 5000, 6000, 9500, 11500, 14000);
+('JM7', 3, 4, 5000, 6000, 9500, 11500, 14000),
+('JM7', 1, 0, 0, 0, 0, 0, 0),
+('JM7', 2, 0, 2000, 3000, 4000, 5000, 6000),
+('JM7', 3, 0, 5000, 7000, 9000, 11500, 13500),
+('JM7', 4, 0, 10000, 13000, 18500, 23000, 27500);
 
 -- --------------------------------------------------------
 
@@ -698,10 +704,11 @@ INSERT INTO `routes` (`RUAS_TOL_ID`, `GT_SEQUENCE`, `GERBANG_TOL_NAME`, `KM`, `N
 ('JM6', 9, 'GT-M TOHA', '62.0', 'Mohammad Toha, Banjaran, Pangalengan, Bandung Kota', '', '-6.956588197', '107.6096892'),
 ('JM6', 10, 'GT-BUAH BATU', '65.0', '  Buah Batu, Dayeuhkolot, Ciparay, Majalaya, Bandung Kota', '', '-6.961827895', '107.6375628'),
 ('JM6', 11, 'GT-CILEUNYI', '79.0', 'Gerbang akhir (ke Cileunyi, Jatinangor, Sumedang, Cirebon, Garut, Tasikmalaya, Ciamis, Banjar, Pangandaran, Purwokerto, Yogyakarta, Solo, Blitar, Kediri, Malang, Jember, Banyuwangi) (arah Cileunyi)\rGerbang awal (arah Bandung/Jakarta)', '', '-6.944196565', '107.7478249'),
-('JM7', 1, 'GT-PALIMANAN', '1.0', 'Jalan Tol Cikampek-Palimanan ', 'JM4', '-6.697598468', '108.4815359'),
+('JM7', 1, 'GT-PALIMANAN', '1.0', 'Jalan Tol Cikampek-Palimanan ', '', '-6.697598468', '108.4815359'),
 ('JM7', 2, 'GT-PLUMBON', '5.0', 'Harjamukti, Cirebon', '', '-6.699126844', '108.4836429'),
 ('JM7', 3, 'GT-CIPERNA', '8.0', 'Stasiun Cirebon', '', '-6.724070629', '108.5105683'),
-('JM7', 4, 'GT-KANCI', '14.0', 'Kanci', '', '-6.799625938', '108.6171913');
+('JM7', 4, 'GT-KANCI', '14.0', 'Kanci', '', '-6.799625938', '108.6171913'),
+('JM7', 0, 'GT-CIKAMPEK', '0.0', NULL, 'JM4', NULL, NULL);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
